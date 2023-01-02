@@ -18,7 +18,7 @@ namespace AscendBeamIndicator
         public override void Initialize(Dictionary<string, Dictionary<string, GameObject>> preloadedObjects)
         {
             USceneManager.activeSceneChanged += CheckForRadiance;
-            Log("Initialized. mhm");
+            Log("Initialized.");
         }
 
         public override string GetVersion() {

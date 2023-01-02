@@ -68,8 +68,8 @@ namespace AscendBeamIndicator
                     // Ascension has begun and Radiance has started firing beams
 
                     if (_knight.transform.position.y >= 150f) {
-                        _ascensionCompleted = true;
                         destroyLines();
+                        _ascensionCompleted = true;
                     } else {
                         if (_ascendBeamControl == null) {
                             _ascendBeamControl = _ascendBeam.LocateMyFSM("Control");
