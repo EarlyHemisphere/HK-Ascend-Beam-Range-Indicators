@@ -29,7 +29,6 @@ namespace AscendBeamIndicator {
             _knight = GameObject.Find("Knight");
 
             Material mat = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
-            mat.SetColor("_Color", Color.red);
 
             _leftBound = new GameObject();
             _leftBound.AddComponent<LineRenderer>();
