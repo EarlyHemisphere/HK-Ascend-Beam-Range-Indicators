@@ -1,84 +1,97 @@
 ﻿using UnityEngine;
 using Logger = Modding.Logger;
+using ModCommon.Util;
+using HutongGames.PlayMaker;
+using HutongGames.PlayMaker.Actions;
 
 namespace AscendBeamRangeIndicators {
     internal class Indicators : MonoBehaviour {
-        private PlayMakerFSM _attackCommands;
-        private PlayMakerFSM _ascendBeamControl = null;
-        private GameObject _knight;
-        private GameObject _eyeBeamGlow = null;
-        private GameObject _ascendBeam = null;
-        private GameObject _leftBound;
-        private LineRenderer _leftBoundRenderer;
-        private GameObject _rightBound;
-        private LineRenderer _rightBoundRenderer;
-        private GameObject _prevLeftBound;
-        private LineRenderer _prevLeftBoundRenderer;
-        private GameObject _prevRightBound;
-        private LineRenderer _prevRightBoundRenderer;
-        private bool _linesInitialized = false;
-        private Vector3 _beamWidthOffsetLeft = new Vector3(0.6f, 0.6f, 0); // these are approximate and were found by trial and error
-        private Vector3 _beamWidthOffsetRight = new Vector3(-0.6f, 0.6f, 0);
-        private bool _beamAnticStarted = false;
-        private bool _ascensionCompleted = false;
+        private PlayMakerFSM attackChoices;
+        private PlayMakerFSM attackCommands;
+        private PlayMakerFSM ascendBeamControl = null;
+        private GameObject knight;
+        private GameObject eyeBeamGlow = null;
+        private GameObject ascendBeam = null;
+        private GameObject leftBound;
+        private LineRenderer leftBoundRenderer;
+        private GameObject rightBound;
+        private LineRenderer rightBoundRenderer;
+        private GameObject prevLeftBound;
+        private LineRenderer prevLeftBoundRenderer;
+        private GameObject prevRightBound;
+        private LineRenderer prevRightBoundRenderer;
+        private bool linesInitialized = false;
+        private Vector3 beamWidthOffsetLeft = new Vector3(0.6f, 0.6f, 0); // these are approximate and were found by trial and error
+        private Vector3 beamWidthOffsetRight = new Vector3(-0.6f, 0.6f, 0);
+        private bool ascensionCompleted = false;
 
         private void Awake() {
             Log("Added BeamRangeIndicators MonoBehaviour");
 
-            _attackCommands = gameObject.LocateMyFSM("Attack Commands");
-            _knight = GameObject.Find("Knight");
+            attackCommands = gameObject.LocateMyFSM("Attack Commands");
+            attackChoices = gameObject.LocateMyFSM("Attack Choices");
+            knight = GameObject.Find("Knight");
 
             Material mat = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
 
-            _leftBound = new GameObject();
-            _leftBound.AddComponent<LineRenderer>();
-            _leftBoundRenderer = _leftBound.GetComponent<LineRenderer>();
-            createLine(_leftBoundRenderer, mat, Color.yellow);
+            leftBound = new GameObject();
+            leftBound.AddComponent<LineRenderer>();
+            leftBoundRenderer = leftBound.GetComponent<LineRenderer>();
+            createLine(leftBoundRenderer, mat, Color.yellow);
 
-            _rightBound = new GameObject();
-            _rightBound.AddComponent<LineRenderer>();
-            _rightBoundRenderer = _rightBound.GetComponent<LineRenderer>();
-            createLine(_rightBoundRenderer, mat, Color.yellow);
+            rightBound = new GameObject();
+            rightBound.AddComponent<LineRenderer>();
+            rightBoundRenderer = rightBound.GetComponent<LineRenderer>();
+            createLine(rightBoundRenderer, mat, Color.yellow);
 
-            _prevLeftBound = new GameObject();
-            _prevLeftBound.AddComponent<LineRenderer>();
-            _prevLeftBoundRenderer = _prevLeftBound.GetComponent<LineRenderer>();
-            createLine(_prevLeftBoundRenderer, mat, Color.red);
+            prevLeftBound = new GameObject();
+            prevLeftBound.AddComponent<LineRenderer>();
+            prevLeftBoundRenderer = prevLeftBound.GetComponent<LineRenderer>();
+            createLine(prevLeftBoundRenderer, mat, Color.red);
 
-            _prevRightBound = new GameObject();
-            _prevRightBound.AddComponent<LineRenderer>();
-            _prevRightBoundRenderer = _prevRightBound.GetComponent<LineRenderer>();
-            createLine(_prevRightBoundRenderer, mat, Color.red);
+            prevRightBound = new GameObject();
+            prevRightBound.AddComponent<LineRenderer>();
+            prevRightBoundRenderer = prevRightBound.GetComponent<LineRenderer>();
+            createLine(prevRightBoundRenderer, mat, Color.red);
         }
 
         private void Update() {
             try {
-                if (_ascendBeam == null) {
-                    _ascendBeam = GameObject.Find("Ascend Beam");
+                if (ascendBeam == null) {
+                    ascendBeam = GameObject.Find("Ascend Beam");
                 }
 
-                if (_eyeBeamGlow == null) {
-                    _eyeBeamGlow = GameObject.Find("Eye Beam Glow");
+                if (eyeBeamGlow == null) {
+                    eyeBeamGlow = GameObject.Find("Eye Beam Glow");
                 }
 
-                if (gameObject.transform.position.y >= 150f && _eyeBeamGlow != null && _ascendBeam != null && !_ascensionCompleted) {
-                    // Ascension has begun and Radiance has started firing beams
-
-                    if (_knight.transform.position.y >= 150f) {
+                if (attackChoices.ActiveStateName == "A2 End" &&
+                    gameObject.transform.position.y >= 150f &&
+                    eyeBeamGlow != null &&
+                    ascendBeam != null &&
+                    !ascensionCompleted) { // Ascension has begun and Radiance has started firing beams
+                    if (knight.transform.position.y >= 150f) {
                         destroyLines();
-                        _ascensionCompleted = true;
+                        ascensionCompleted = true;
                     } else {
-                        if (_ascendBeamControl == null) {
-                            _ascendBeamControl = _ascendBeam.LocateMyFSM("Control");
+                        if (ascendBeamControl == null) {
+                            ascendBeamControl = ascendBeam.LocateMyFSM("Control");
                         }
 
-                        if (!_linesInitialized) {
+                        if (!linesInitialized) {
                             Log("Ascension has begun, adding range indicators");
-                            _leftBoundRenderer.SetPosition(0, _eyeBeamGlow.transform.position + _beamWidthOffsetLeft);
-                            _rightBoundRenderer.SetPosition(0, _eyeBeamGlow.transform.position + _beamWidthOffsetRight);
-                            _prevLeftBoundRenderer.SetPosition(0, _eyeBeamGlow.transform.position + _beamWidthOffsetLeft);
-                            _prevRightBoundRenderer.SetPosition(0, _eyeBeamGlow.transform.position + _beamWidthOffsetRight);
-                            _linesInitialized = true;
+                            leftBoundRenderer.SetPosition(0, eyeBeamGlow.transform.position + beamWidthOffsetLeft);
+                            rightBoundRenderer.SetPosition(0, eyeBeamGlow.transform.position + beamWidthOffsetRight);
+                            prevLeftBoundRenderer.SetPosition(0, eyeBeamGlow.transform.position + beamWidthOffsetLeft);
+                            prevRightBoundRenderer.SetPosition(0, eyeBeamGlow.transform.position + beamWidthOffsetRight);
+                            linesInitialized = true;
+
+                            attackCommands.AddAction("Aim", (FsmStateAction)new CallMethod {
+                                behaviour = this,
+                                methodName = "UpdatePreviousIndicators",
+                                parameters = new FsmVar[0],
+                                everyFrame = false,
+                            });
                         }
 
                         updateIndicators();
@@ -100,40 +113,37 @@ namespace AscendBeamRangeIndicators {
         }
 
         private void updateIndicators() {
-            Vector3 knightPos = _knight.transform.position;
-            Vector3 eyeBeamGlowPos = _eyeBeamGlow.transform.position;
+            Vector3 knightPos = knight.transform.position;
+            Vector3 eyeBeamGlowPos = eyeBeamGlow.transform.position;
 
-            _leftBoundRenderer.SetPosition(1, Quaternion.Euler(0, 0, 5) * (knightPos - new Vector3(0, -0.5f, 0) - eyeBeamGlowPos) + eyeBeamGlowPos + _beamWidthOffsetLeft);
-            _rightBoundRenderer.SetPosition(1, Quaternion.Euler(0, 0, -5) * (knightPos - new Vector3(0, -0.5f, 0) - eyeBeamGlowPos) + eyeBeamGlowPos + _beamWidthOffsetRight);
+            leftBoundRenderer.SetPosition(1, Quaternion.Euler(0, 0, 5) * (knightPos - new Vector3(0, -0.5f, 0) - eyeBeamGlowPos) + eyeBeamGlowPos + beamWidthOffsetLeft);
+            rightBoundRenderer.SetPosition(1, Quaternion.Euler(0, 0, -5) * (knightPos - new Vector3(0, -0.5f, 0) - eyeBeamGlowPos) + eyeBeamGlowPos + beamWidthOffsetRight);
 
             // Extend left bound indicator past the player
             Vector3[] leftBoundPositions = new Vector3[2];
-            _leftBoundRenderer.GetPositions(leftBoundPositions);
+            leftBoundRenderer.GetPositions(leftBoundPositions);
             float leftBoundSlope = (leftBoundPositions[0].x - leftBoundPositions[1].x) / (leftBoundPositions[0].y - leftBoundPositions[1].y);
-            _leftBoundRenderer.SetPosition(1, new Vector3(leftBoundPositions[1].x - 100 * leftBoundSlope, leftBoundPositions[1].y - 100));
+            leftBoundRenderer.SetPosition(1, new Vector3(leftBoundPositions[1].x - 100 * leftBoundSlope, leftBoundPositions[1].y - 100));
 
             // Extend right bound indicator past the player
             Vector3[] rightBoundPositions = new Vector3[2];
-            _rightBoundRenderer.GetPositions(rightBoundPositions);
+            rightBoundRenderer.GetPositions(rightBoundPositions);
             float rightBoundSlope = (rightBoundPositions[0].x - rightBoundPositions[1].x) / (rightBoundPositions[0].y - rightBoundPositions[1].y);
-            _rightBoundRenderer.SetPosition(1, new Vector3(rightBoundPositions[1].x - 100 * rightBoundSlope, rightBoundPositions[1].y - 100));
+            rightBoundRenderer.SetPosition(1, new Vector3(rightBoundPositions[1].x - 100 * rightBoundSlope, rightBoundPositions[1].y - 100));
+        }
 
-            if (_ascendBeamControl.ActiveStateName == "Antic") {
-                if (!_beamAnticStarted) {
-                    _prevLeftBoundRenderer.SetPosition(1, _leftBoundRenderer.GetPosition(1) + _beamWidthOffsetLeft);
-                    _prevRightBoundRenderer.SetPosition(1, _rightBoundRenderer.GetPosition(1) + _beamWidthOffsetRight);
-                    _beamAnticStarted = true;
-                }
-            } else {
-                _beamAnticStarted = false;
-            }
+        public void UpdatePreviousIndicators() {
+            prevLeftBoundRenderer.SetPosition(1, leftBoundRenderer.GetPosition(1));
+            prevRightBoundRenderer.SetPosition(1, rightBoundRenderer.GetPosition(1));
         }
 
         private void destroyLines() {
-            Destroy(_leftBound);
-            Destroy(_rightBound);
-            Destroy(_prevLeftBound);
-            Destroy(_prevRightBound);
+            attackCommands.RemoveAction("Aim", 12);
+            Destroy(leftBound);
+            Destroy(rightBound);
+            Destroy(prevLeftBound);
+            Destroy(prevRightBound);
+            Destroy(this);
         }
 
         private static void Log(object obj) {
