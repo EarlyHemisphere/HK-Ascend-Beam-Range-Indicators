@@ -21,6 +21,7 @@ namespace AscendBeamIndicator
         private Vector3 _beamWidthOffsetLeft = new Vector3(0.6f, 0.6f, 0); // these are approximate and were found by trial and error
         private Vector3 _beamWidthOffsetRight = new Vector3(-0.6f, 0.6f, 0);
         private bool _beamAnticStarted = false;
+        private bool _ascensionCompleted = false;
 
         private void Awake()
         {
@@ -63,22 +64,28 @@ namespace AscendBeamIndicator
                     _eyeBeamGlow = GameObject.Find("Eye Beam Glow");
                 }
 
-                if (gameObject.transform.position.y >= 150f && _eyeBeamGlow != null && _ascendBeam != null) {
+                if (gameObject.transform.position.y >= 150f && _eyeBeamGlow != null && _ascendBeam != null && !_ascensionCompleted) {
                     // Ascension has begun and Radiance has started firing beams
-                    if (_ascendBeamControl == null) {
-                        _ascendBeamControl = _ascendBeam.LocateMyFSM("Control");
-                    }
 
-                    if (!_linesInitialized) {
-                        Log("Ascension has begun, adding range indicators");
-                        _leftBoundRenderer.SetPosition(0, _eyeBeamGlow.transform.position + _beamWidthOffsetLeft);
-                        _rightBoundRenderer.SetPosition(0, _eyeBeamGlow.transform.position + _beamWidthOffsetRight);
-                        _prevLeftBoundRenderer.SetPosition(0, _eyeBeamGlow.transform.position + _beamWidthOffsetLeft);
-                        _prevRightBoundRenderer.SetPosition(0, _eyeBeamGlow.transform.position + _beamWidthOffsetRight);
-                        _linesInitialized = true;
-                    }
+                    if (_knight.transform.position.y >= 150f) {
+                        _ascensionCompleted = true;
+                        destroyLines();
+                    } else {
+                        if (_ascendBeamControl == null) {
+                            _ascendBeamControl = _ascendBeam.LocateMyFSM("Control");
+                        }
 
-                    updateIndicators();
+                        if (!_linesInitialized) {
+                            Log("Ascension has begun, adding range indicators");
+                            _leftBoundRenderer.SetPosition(0, _eyeBeamGlow.transform.position + _beamWidthOffsetLeft);
+                            _rightBoundRenderer.SetPosition(0, _eyeBeamGlow.transform.position + _beamWidthOffsetRight);
+                            _prevLeftBoundRenderer.SetPosition(0, _eyeBeamGlow.transform.position + _beamWidthOffsetLeft);
+                            _prevRightBoundRenderer.SetPosition(0, _eyeBeamGlow.transform.position + _beamWidthOffsetRight);
+                            _linesInitialized = true;
+                        }
+
+                        updateIndicators();
+                    }
                 }
             } catch (System.NullReferenceException) {
                 // Radiance is not firing beams yet
@@ -123,6 +130,13 @@ namespace AscendBeamIndicator
             } else {
                 _beamAnticStarted = false;
             }
+        }
+
+        private void destroyLines() {
+            Destroy(_leftBound);
+            Destroy(_rightBound);
+            Destroy(_prevLeftBound);
+            Destroy(_prevRightBound);
         }
 
         private static void Log(object obj) {
