@@ -1,27 +1,21 @@
 ﻿using UnityEngine;
 
-namespace AscendBeamIndicator
-{
-    internal class AbsFinder : MonoBehaviour
-    {
+namespace AscendBeamIndicator {
+    internal class AbsFinder : MonoBehaviour {
         private GameObject _abs;
         private bool _assigned;
 
-        private void Start()
-        {
+        private void Start() {
             AscendBeamIndicator.instance.Log("Added AbsFinder MonoBehaviour");
         }
 
-        private void Update()
-        {
-            if (_abs == null)
-            {
+        private void Update() {
+            if (_abs == null) {
                 _assigned = false;
                 _abs = GameObject.Find("Absolute Radiance");
             }
 
-            if (_assigned || _abs == null)
-            {
+            if (_assigned || _abs == null) {
                 return;
             }
 
