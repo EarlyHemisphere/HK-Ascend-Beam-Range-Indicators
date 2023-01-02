@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 
-namespace AscendBeamIndicator {
+namespace AscendBeamRangeIndicators {
     internal class AbsFinder : MonoBehaviour {
         private GameObject _abs;
         private bool _assigned;
 
         private void Start() {
-            AscendBeamIndicator.instance.Log("Added AbsFinder MonoBehaviour");
+            AscendBeamRangeIndicators.instance.Log("Added AbsFinder MonoBehaviour");
         }
 
         private void Update() {
@@ -20,7 +20,7 @@ namespace AscendBeamIndicator {
             }
 
             _assigned = true;
-            AscendBeamIndicator.instance.Log("Found the Radiance!");
+            AscendBeamRangeIndicators.instance.Log("Found the Radiance!");
             _abs.AddComponent<Indicators>();
         }
     }

@@ -8,11 +8,11 @@
     <!--<DocumentationFile>$(OutputPath)/$(AssemblyTitle).xml</DocumentationFile>-->
   </PropertyGroup>
   <PropertyGroup>
-    <RootNamespace>AscendBeamControl</RootNamespace>
-    <AssemblyName>AscendBeamControl</AssemblyName>
+    <RootNamespace>AscendBeamRangeIndicators</RootNamespace>
+    <AssemblyName>AscendBeamRangeIndicators</AssemblyName>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyTitle>AscendBeamControl</AssemblyTitle>
-    <Product>AscendBeamControl</Product>
+    <AssemblyTitle>AscendBeamRangeIndicators</AssemblyTitle>
+    <Product>AscendBeamRangeIndicators</Product>
     <Description>A Hollow Knight Mod</Description>
     <Copyright>Copyright ©  $year$</Copyright>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>

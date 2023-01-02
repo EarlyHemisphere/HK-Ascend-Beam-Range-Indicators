@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Logger = Modding.Logger;
 
-namespace AscendBeamIndicator {
+namespace AscendBeamRangeIndicators {
     internal class Indicators : MonoBehaviour {
         private PlayMakerFSM _attackCommands;
         private PlayMakerFSM _ascendBeamControl = null;
@@ -137,7 +137,7 @@ namespace AscendBeamIndicator {
         }
 
         private static void Log(object obj) {
-            Logger.Log("[AscendBeamIndicator] - " + obj);
+            Logger.Log("[AscendBeamRangeIndicators] - " + obj);
         }
     }
 }

@@ -4,11 +4,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using USceneManager = UnityEngine.SceneManagement.SceneManager;
 
-namespace AscendBeamIndicator {
-    public class AscendBeamIndicator : Mod {
-        internal static AscendBeamIndicator instance;
+namespace AscendBeamRangeIndicators {
+    public class AscendBeamRangeIndicators : Mod {
+        internal static AscendBeamRangeIndicators instance;
 
-        public AscendBeamIndicator() : base("Ascend Beam Range Indicator") {
+        public AscendBeamRangeIndicators() : base("Ascend Beam Range Indicators") {
            instance = this;
         }
 
