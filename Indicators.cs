@@ -18,7 +18,7 @@ namespace AscendBeamIndicator
         private GameObject _prevRightBound;
         private LineRenderer _prevRightBoundRenderer;
         private bool _linesInitialized = false;
-        private Vector3 _beamWidthOffsetLeft = new Vector3(0.6f, 0.6f, 0);
+        private Vector3 _beamWidthOffsetLeft = new Vector3(0.6f, 0.6f, 0); // these are approximate and were found by trial and error
         private Vector3 _beamWidthOffsetRight = new Vector3(-0.6f, 0.6f, 0);
         private bool _beamAnticStarted = false;
 
