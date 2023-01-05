@@ -20,11 +20,12 @@ namespace AscendBeamRangeIndicators {
         private LineRenderer prevLeftBoundRenderer;
         private GameObject prevRightBound;
         private LineRenderer prevRightBoundRenderer;
+        private GameObject highestMissChance;
+        private LineRenderer highestMissChanceRenderer;
         private bool linesInitialized = false;
         private Vector3 beamWidthOffsetLeft = new Vector3(0.6f, 0.6f, 0); // these are approximate and were found by trial and error
         private Vector3 beamWidthOffsetRight = new Vector3(-0.6f, 0.6f, 0);
         private bool ascensionCompleted = false;
-
         private void Awake() {
             Log("Added BeamRangeIndicators MonoBehaviour");
 
@@ -32,27 +33,30 @@ namespace AscendBeamRangeIndicators {
             attackChoices = gameObject.LocateMyFSM("Attack Choices");
             knight = GameObject.Find("Knight");
 
-            Material mat = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
-
             leftBound = new GameObject();
             leftBound.AddComponent<LineRenderer>();
             leftBoundRenderer = leftBound.GetComponent<LineRenderer>();
-            createLine(leftBoundRenderer, mat, Color.yellow);
+            createLine(leftBoundRenderer, Color.yellow);
 
             rightBound = new GameObject();
             rightBound.AddComponent<LineRenderer>();
             rightBoundRenderer = rightBound.GetComponent<LineRenderer>();
-            createLine(rightBoundRenderer, mat, Color.yellow);
+            createLine(rightBoundRenderer, Color.yellow);
 
             prevLeftBound = new GameObject();
             prevLeftBound.AddComponent<LineRenderer>();
             prevLeftBoundRenderer = prevLeftBound.GetComponent<LineRenderer>();
-            createLine(prevLeftBoundRenderer, mat, Color.red);
+            createLine(prevLeftBoundRenderer, Color.red);
 
             prevRightBound = new GameObject();
             prevRightBound.AddComponent<LineRenderer>();
             prevRightBoundRenderer = prevRightBound.GetComponent<LineRenderer>();
-            createLine(prevRightBoundRenderer, mat, Color.red);
+            createLine(prevRightBoundRenderer, Color.red);
+
+            highestMissChance = new GameObject();
+            highestMissChance.AddComponent<LineRenderer>();
+            highestMissChanceRenderer = highestMissChance.GetComponent<LineRenderer>();
+            createLine(highestMissChanceRenderer, Color.green);
         }
 
         private void Update() {
@@ -70,7 +74,7 @@ namespace AscendBeamRangeIndicators {
                     eyeBeamGlow != null &&
                     ascendBeam != null &&
                     !ascensionCompleted) { // Ascension has begun and Radiance has started firing beams
-                    if (knight.transform.position.y >= 150f) {
+                    if (knight.transform.position.y >= 160f) {
                         destroyLines();
                         ascensionCompleted = true;
                     } else {
@@ -84,6 +88,8 @@ namespace AscendBeamRangeIndicators {
                             rightBoundRenderer.SetPosition(0, eyeBeamGlow.transform.position + beamWidthOffsetRight);
                             prevLeftBoundRenderer.SetPosition(0, eyeBeamGlow.transform.position + beamWidthOffsetLeft);
                             prevRightBoundRenderer.SetPosition(0, eyeBeamGlow.transform.position + beamWidthOffsetRight);
+                            highestMissChanceRenderer.SetPosition(0, eyeBeamGlow.transform.position);
+                            highestMissChanceRenderer.SetPosition(1, eyeBeamGlow.transform.position + new Vector3(0, -200, 0));
                             linesInitialized = true;
 
                             attackCommands.AddAction("Aim", (FsmStateAction)new CallMethod {
@@ -104,8 +110,8 @@ namespace AscendBeamRangeIndicators {
             }
         }
 
-        private void createLine(LineRenderer renderer, Material mat, Color color) {
-            renderer.material = mat;
+        private void createLine(LineRenderer renderer, Color color) {
+            renderer.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));;
             renderer.startColor = color;
             renderer.endColor = color;
             renderer.startWidth = 0.15f;
@@ -143,6 +149,7 @@ namespace AscendBeamRangeIndicators {
             Destroy(rightBound);
             Destroy(prevLeftBound);
             Destroy(prevRightBound);
+            Destroy(highestMissChance);
             Destroy(this);
         }
 
