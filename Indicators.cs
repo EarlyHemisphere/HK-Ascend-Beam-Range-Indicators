@@ -74,7 +74,7 @@ namespace AscendBeamRangeIndicators {
                     eyeBeamGlow != null &&
                     ascendBeam != null &&
                     !ascensionCompleted) { // Ascension has begun and Radiance has started firing beams
-                    if (knight.transform.position.y >= 160f) {
+                    if (knight.transform.position.y >= 153f) {
                         destroyLines();
                         ascensionCompleted = true;
                     } else {
