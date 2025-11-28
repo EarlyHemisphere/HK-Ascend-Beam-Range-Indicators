@@ -36,12 +36,12 @@ namespace AscendBeamRangeIndicators {
             leftBound = new GameObject();
             leftBound.AddComponent<LineRenderer>();
             leftBoundRenderer = leftBound.GetComponent<LineRenderer>();
-            createLine(leftBoundRenderer, Color.yellow);
+            createLine(leftBoundRenderer, Color.cyan);
 
             rightBound = new GameObject();
             rightBound.AddComponent<LineRenderer>();
             rightBoundRenderer = rightBound.GetComponent<LineRenderer>();
-            createLine(rightBoundRenderer, Color.yellow);
+            createLine(rightBoundRenderer, Color.cyan);
 
             prevLeftBound = new GameObject();
             prevLeftBound.AddComponent<LineRenderer>();
