@@ -123,8 +123,8 @@ namespace AscendBeamRangeIndicators {
             Vector3 directionToKnight = (targetPos - eyeBeamGlowPos).normalized;
         
             // Apply the +5 and -5 degree rotations to the base direction
-            Vector3 leftBeamDirection = Quaternion.Euler(0, 0, 5) * directionToKnight;
-            Vector3 rightBeamDirection = Quaternion.Euler(0, 0, -5) * directionToKnight;
+            Vector3 leftBeamDirection = Quaternion.Euler(0, 0, -5) * directionToKnight;
+            Vector3 rightBeamDirection = Quaternion.Euler(0, 0, 5) * directionToKnight;
         
             // Calculate perpendicular offsets for the beam width
             // The perpendicular is 90 degrees rotated from the beam direction
@@ -132,8 +132,8 @@ namespace AscendBeamRangeIndicators {
             Vector3 rightPerpendicular = Quaternion.Euler(0, 0, 90) * rightBeamDirection;
         
             // Calculate the outer edge origins
-            Vector3 leftOrigin = eyeBeamGlowPos + leftPerpendicular * (beamHalfWidth - lineWidth * 1.5f);
-            Vector3 rightOrigin = eyeBeamGlowPos - rightPerpendicular * (beamHalfWidth - lineWidth * 1.5f);
+            Vector3 leftOrigin = eyeBeamGlowPos - leftPerpendicular * (beamHalfWidth - lineWidth * 1.7f);
+            Vector3 rightOrigin = eyeBeamGlowPos + rightPerpendicular * (beamHalfWidth - lineWidth * 1.4f);
             leftOrigin.z = rightOrigin.z = ascendBeam.transform.position.z;
 
             // Draw lines from origins along the rotated directions
