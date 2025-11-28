@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <!-- Change this to the path of your modded HK installation -->
-    <HollowKnightRefs>/home/lucas/.steam/debian-installation/steamapps/common/Hollow Knight/hollow_knight_Data/Managed</HollowKnightRefs>
+    <HollowKnightRefs></HollowKnightRefs>
     <!-- Change this to the path where you want the ready-to-upload exports to be -->
-    <ExportDir>/home/lucas/Desktop</ExportDir>
+    <ExportDir></ExportDir>
     <!-- Uncomment this to generate a documentation file to be included with the mod -->
     <!--<DocumentationFile>$(OutputPath)/$(AssemblyTitle).xml</DocumentationFile>-->
   </PropertyGroup>
@@ -65,7 +65,7 @@
       <HintPath>$(HollowKnightRefs)/MMHOOK_PlayMaker.dll</HintPath>
     </Reference>
     <Reference Include="ModCommon">
-      <HintPath>$(HollowKnightRefs)/ModCommon.dll</HintPath>
+      <HintPath>$(HollowKnightRefs)/Mods/ModCommon/ModCommon.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>$(HollowKnightRefs)/Mono.Cecil.dll</HintPath>

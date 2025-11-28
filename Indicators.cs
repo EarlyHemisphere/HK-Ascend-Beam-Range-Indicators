@@ -22,9 +22,9 @@ namespace AscendBeamRangeIndicators {
         private LineRenderer prevRightBoundRenderer;
         private GameObject highestMissChance;
         private LineRenderer highestMissChanceRenderer;
+        private float beamHalfWidth = 0.8828f;
+        private float lineWidth = 0.15f;
         private bool linesInitialized = false;
-        private Vector3 beamWidthOffsetLeft = new Vector3(0.6f, 0.6f, 0); // these are approximate and were found by trial and error
-        private Vector3 beamWidthOffsetRight = new Vector3(-0.6f, 0.6f, 0);
         private bool ascensionCompleted = false;
         private void Awake() {
             Log("Added BeamRangeIndicators MonoBehaviour");
@@ -84,15 +84,11 @@ namespace AscendBeamRangeIndicators {
 
                         if (!linesInitialized) {
                             Log("Ascension has begun, adding range indicators");
-                            leftBoundRenderer.SetPosition(0, eyeBeamGlow.transform.position + beamWidthOffsetLeft);
-                            rightBoundRenderer.SetPosition(0, eyeBeamGlow.transform.position + beamWidthOffsetRight);
-                            prevLeftBoundRenderer.SetPosition(0, eyeBeamGlow.transform.position + beamWidthOffsetLeft);
-                            prevRightBoundRenderer.SetPosition(0, eyeBeamGlow.transform.position + beamWidthOffsetRight);
                             highestMissChanceRenderer.SetPosition(0, eyeBeamGlow.transform.position);
                             highestMissChanceRenderer.SetPosition(1, eyeBeamGlow.transform.position + new Vector3(0, -200, 0));
                             linesInitialized = true;
 
-                            attackCommands.AddAction("Aim", (FsmStateAction)new CallMethod {
+                            attackCommands.AddAction("Aim", new CallMethod {
                                 behaviour = this,
                                 methodName = "UpdatePreviousIndicators",
                                 parameters = new FsmVar[0],
@@ -114,32 +110,43 @@ namespace AscendBeamRangeIndicators {
             renderer.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));;
             renderer.startColor = color;
             renderer.endColor = color;
-            renderer.startWidth = 0.15f;
-            renderer.endWidth = 0.15f;
+            renderer.startWidth = lineWidth;
+            renderer.endWidth = lineWidth;
         }
 
         private void updateIndicators() {
             Vector3 knightPos = knight.transform.position;
             Vector3 eyeBeamGlowPos = eyeBeamGlow.transform.position;
 
-            leftBoundRenderer.SetPosition(1, Quaternion.Euler(0, 0, 5) * (knightPos - new Vector3(0, -0.5f, 0) - eyeBeamGlowPos) + eyeBeamGlowPos + beamWidthOffsetLeft);
-            rightBoundRenderer.SetPosition(1, Quaternion.Euler(0, 0, -5) * (knightPos - new Vector3(0, -0.5f, 0) - eyeBeamGlowPos) + eyeBeamGlowPos + beamWidthOffsetRight);
+            // Calculate direction from center to knight (with -0.5 Y offset)
+            Vector3 targetPos = knightPos - new Vector3(0, 0.5f, 0);
+            Vector3 directionToKnight = (targetPos - eyeBeamGlowPos).normalized;
+        
+            // Apply the +5 and -5 degree rotations to the base direction
+            Vector3 leftBeamDirection = Quaternion.Euler(0, 0, 5) * directionToKnight;
+            Vector3 rightBeamDirection = Quaternion.Euler(0, 0, -5) * directionToKnight;
+        
+            // Calculate perpendicular offsets for the beam width
+            // The perpendicular is 90 degrees rotated from the beam direction
+            Vector3 leftPerpendicular = Quaternion.Euler(0, 0, 90) * leftBeamDirection;
+            Vector3 rightPerpendicular = Quaternion.Euler(0, 0, 90) * rightBeamDirection;
+        
+            // Calculate the outer edge origins
+            Vector3 leftOrigin = eyeBeamGlowPos + leftPerpendicular * (beamHalfWidth - lineWidth * 1.5f);
+            Vector3 rightOrigin = eyeBeamGlowPos - rightPerpendicular * (beamHalfWidth - lineWidth * 1.5f);
+            leftOrigin.z = rightOrigin.z = ascendBeam.transform.position.z;
 
-            // Extend left bound indicator past the player
-            Vector3[] leftBoundPositions = new Vector3[2];
-            leftBoundRenderer.GetPositions(leftBoundPositions);
-            float leftBoundSlope = (leftBoundPositions[0].x - leftBoundPositions[1].x) / (leftBoundPositions[0].y - leftBoundPositions[1].y);
-            leftBoundRenderer.SetPosition(1, new Vector3(leftBoundPositions[1].x - 100 * leftBoundSlope, leftBoundPositions[1].y - 100));
-
-            // Extend right bound indicator past the player
-            Vector3[] rightBoundPositions = new Vector3[2];
-            rightBoundRenderer.GetPositions(rightBoundPositions);
-            float rightBoundSlope = (rightBoundPositions[0].x - rightBoundPositions[1].x) / (rightBoundPositions[0].y - rightBoundPositions[1].y);
-            rightBoundRenderer.SetPosition(1, new Vector3(rightBoundPositions[1].x - 100 * rightBoundSlope, rightBoundPositions[1].y - 100));
+            // Draw lines from origins along the rotated directions
+            leftBoundRenderer.SetPosition(0, leftOrigin);
+            rightBoundRenderer.SetPosition(0, rightOrigin);
+            leftBoundRenderer.SetPosition(1, leftOrigin + leftBeamDirection * 400);
+            rightBoundRenderer.SetPosition(1, rightOrigin + rightBeamDirection * 400);
         }
 
         public void UpdatePreviousIndicators() {
+            prevLeftBoundRenderer.SetPosition(0, leftBoundRenderer.GetPosition(0));
             prevLeftBoundRenderer.SetPosition(1, leftBoundRenderer.GetPosition(1));
+            prevRightBoundRenderer.SetPosition(0, rightBoundRenderer.GetPosition(0));
             prevRightBoundRenderer.SetPosition(1, rightBoundRenderer.GetPosition(1));
         }
 
