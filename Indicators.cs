@@ -20,10 +20,19 @@ namespace AscendBeamRangeIndicators {
         private LineRenderer prevLeftBoundRenderer;
         private GameObject prevRightBound;
         private LineRenderer prevRightBoundRenderer;
+        private GameObject leftInnerBound;
+        private LineRenderer leftInnerBoundRenderer;
+        private GameObject rightInnerBound;
+        private LineRenderer rightInnerBoundRenderer;
+        private GameObject prevLeftInnerBound;
+        private LineRenderer prevLeftInnerBoundRenderer;
+        private GameObject prevRightInnerBound;
+        private LineRenderer prevRightInnerBoundRenderer;
         private GameObject highestMissChance;
         private LineRenderer highestMissChanceRenderer;
         private float beamHalfWidth = 0.8828f;
         private float lineWidth = 0.15f;
+        private float innerLineWidth = 0.05f;
         private bool linesInitialized = false;
         private bool ascensionCompleted = false;
         private void Awake() {
@@ -52,6 +61,27 @@ namespace AscendBeamRangeIndicators {
             prevRightBound.AddComponent<LineRenderer>();
             prevRightBoundRenderer = prevRightBound.GetComponent<LineRenderer>();
             createLine(prevRightBoundRenderer, Color.red);
+
+            leftInnerBound = new GameObject();
+            leftInnerBound.AddComponent<LineRenderer>();
+            leftInnerBoundRenderer = leftInnerBound.GetComponent<LineRenderer>();
+            createLine(leftInnerBoundRenderer, Color.cyan, innerLineWidth);
+
+            rightInnerBound = new GameObject();
+            rightInnerBound.AddComponent<LineRenderer>();
+            rightInnerBoundRenderer = rightInnerBound.GetComponent<LineRenderer>();
+            createLine(rightInnerBoundRenderer, Color.cyan, innerLineWidth);
+
+            prevLeftInnerBound = new GameObject();
+            prevLeftInnerBound.AddComponent<LineRenderer>();
+            prevLeftInnerBoundRenderer = prevLeftInnerBound.GetComponent<LineRenderer>();
+            createLine(prevLeftInnerBoundRenderer, Color.red, innerLineWidth);
+
+            prevRightInnerBound = new GameObject();
+            prevRightInnerBound.AddComponent<LineRenderer>();
+            prevRightInnerBoundRenderer = prevRightInnerBound.GetComponent<LineRenderer>();
+            createLine(prevRightInnerBoundRenderer, Color.red, innerLineWidth);
+
 
             highestMissChance = new GameObject();
             highestMissChance.AddComponent<LineRenderer>();
@@ -106,12 +136,16 @@ namespace AscendBeamRangeIndicators {
             }
         }
 
-        private void createLine(LineRenderer renderer, Color color) {
+        private void createLine(LineRenderer renderer, Color color, float width) {
             renderer.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));;
             renderer.startColor = color;
             renderer.endColor = color;
-            renderer.startWidth = lineWidth;
-            renderer.endWidth = lineWidth;
+            renderer.startWidth = width;
+            renderer.endWidth = width;
+        }
+
+        private void createLine(LineRenderer renderer, Color color) {
+            createLine(renderer, color, lineWidth);
         }
 
         private void updateIndicators() {
@@ -121,19 +155,19 @@ namespace AscendBeamRangeIndicators {
             // Calculate direction from center to knight (with -0.5 Y offset)
             Vector3 targetPos = knightPos - new Vector3(0, 0.5f, 0);
             Vector3 directionToKnight = (targetPos - eyeBeamGlowPos).normalized;
-        
+       
             // Apply the +5 and -5 degree rotations to the base direction
-            Vector3 leftBeamDirection = Quaternion.Euler(0, 0, 5) * directionToKnight;
-            Vector3 rightBeamDirection = Quaternion.Euler(0, 0, -5) * directionToKnight;
-        
+            Vector3 leftBeamDirection = Quaternion.Euler(0, 0, -5) * directionToKnight;
+            Vector3 rightBeamDirection = Quaternion.Euler(0, 0, 5) * directionToKnight;
+       
             // Calculate perpendicular offsets for the beam width
             // The perpendicular is 90 degrees rotated from the beam direction
             Vector3 leftPerpendicular = Quaternion.Euler(0, 0, 90) * leftBeamDirection;
             Vector3 rightPerpendicular = Quaternion.Euler(0, 0, 90) * rightBeamDirection;
-        
+       
             // Calculate the outer edge origins
-            Vector3 leftOrigin = eyeBeamGlowPos + leftPerpendicular * (beamHalfWidth - lineWidth * 1.5f);
-            Vector3 rightOrigin = eyeBeamGlowPos - rightPerpendicular * (beamHalfWidth - lineWidth * 1.5f);
+            Vector3 leftOrigin = eyeBeamGlowPos - leftPerpendicular * (beamHalfWidth - lineWidth * 1.7f);
+            Vector3 rightOrigin = eyeBeamGlowPos + rightPerpendicular * (beamHalfWidth - lineWidth * 1.4f);
             leftOrigin.z = rightOrigin.z = ascendBeam.transform.position.z;
 
             // Draw lines from origins along the rotated directions
@@ -141,6 +175,16 @@ namespace AscendBeamRangeIndicators {
             rightBoundRenderer.SetPosition(0, rightOrigin);
             leftBoundRenderer.SetPosition(1, leftOrigin + leftBeamDirection * 400);
             rightBoundRenderer.SetPosition(1, rightOrigin + rightBeamDirection * 400);
+
+            // Calculate inner boundaries (one beam width inward)
+            Vector3 leftInnerOrigin = eyeBeamGlowPos + leftPerpendicular * (beamHalfWidth - innerLineWidth * 3.4f);
+            Vector3 rightInnerOrigin = eyeBeamGlowPos - rightPerpendicular * (beamHalfWidth - innerLineWidth * 4.1f);
+            leftInnerOrigin.z = rightInnerOrigin.z = ascendBeam.transform.position.z;
+
+            leftInnerBoundRenderer.SetPosition(0, leftInnerOrigin);
+            rightInnerBoundRenderer.SetPosition(0, rightInnerOrigin);
+            leftInnerBoundRenderer.SetPosition(1, leftInnerOrigin + leftBeamDirection * 400);
+            rightInnerBoundRenderer.SetPosition(1, rightInnerOrigin + rightBeamDirection * 400);
         }
 
         public void UpdatePreviousIndicators() {
@@ -148,6 +192,10 @@ namespace AscendBeamRangeIndicators {
             prevLeftBoundRenderer.SetPosition(1, leftBoundRenderer.GetPosition(1));
             prevRightBoundRenderer.SetPosition(0, rightBoundRenderer.GetPosition(0));
             prevRightBoundRenderer.SetPosition(1, rightBoundRenderer.GetPosition(1));
+            prevLeftInnerBoundRenderer.SetPosition(0, leftInnerBoundRenderer.GetPosition(0));
+            prevLeftInnerBoundRenderer.SetPosition(1, leftInnerBoundRenderer.GetPosition(1));
+            prevRightInnerBoundRenderer.SetPosition(0, rightInnerBoundRenderer.GetPosition(0));
+            prevRightInnerBoundRenderer.SetPosition(1, rightInnerBoundRenderer.GetPosition(1));
         }
 
         private void destroyLines() {
@@ -156,6 +204,10 @@ namespace AscendBeamRangeIndicators {
             Destroy(rightBound);
             Destroy(prevLeftBound);
             Destroy(prevRightBound);
+            Destroy(leftInnerBound);
+            Destroy(rightInnerBound);
+            Destroy(prevLeftInnerBound);
+            Destroy(prevRightInnerBound);
             Destroy(highestMissChance);
             Destroy(this);
         }
