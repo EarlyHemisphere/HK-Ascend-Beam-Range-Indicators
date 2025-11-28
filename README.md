@@ -9,3 +9,5 @@ Adds indicators during the Ascension phase of the Absolute Radiance fight that s
 The boundary lines are placed such that the outer edge of the lines matches exactly with the outer edge of the beam hitbox when the beam is shot at the extreme of its range.
 
 This mod is made for Hollow Knight 1.5 and requires Mod Common cuz I'm too lazy to convert to SFCore and only testing with Any Radiance anyways.
+
+The code is kinda bad but I don't wanna make it pretty at the moment.
