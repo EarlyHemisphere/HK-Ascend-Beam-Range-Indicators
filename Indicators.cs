@@ -35,6 +35,7 @@ namespace AscendBeamRangeIndicators {
         private float innerLineWidth = 0.05f;
         private bool linesInitialized = false;
         private bool ascensionCompleted = false;
+        private bool forceBeamAtPlayer = false;
         private void Awake() {
             Log("Added BeamRangeIndicators MonoBehaviour");
 
@@ -91,6 +92,13 @@ namespace AscendBeamRangeIndicators {
 
         private void Update() {
             try {
+                if (AscendBeamRangeIndicators.settings.keybinds.ForceBeamAtPlayer.WasPressed) {
+                    forceBeamAtPlayer = !forceBeamAtPlayer;
+                    SetForceBeamAtPlayer(forceBeamAtPlayer);
+                }
+
+                SetIndicatorsVisible(AscendBeamRangeIndicators.settings.showIndicators);
+
                 if (ascendBeam == null) {
                     ascendBeam = GameObject.Find("Ascend Beam");
                 }
@@ -146,6 +154,27 @@ namespace AscendBeamRangeIndicators {
 
         private void createLine(LineRenderer renderer, Color color) {
             createLine(renderer, color, lineWidth);
+        }
+
+        private void SetForceBeamAtPlayer(bool enabled) {
+            // "Aim" action 4 is the RandomFloat that picks the beam's aim offset.
+            // Pinning min/max to 0 removes the random spread so the beam always aims at the knight.
+            RandomFloat aimRandomFloat = attackCommands.GetAction<RandomFloat>("Aim", 4);
+            aimRandomFloat.min = enabled ? 0f : -5f;
+            aimRandomFloat.max = enabled ? 0f : 5f;
+            Log("Force Beam At Player " + (enabled ? "enabled" : "disabled"));
+        }
+
+        private void SetIndicatorsVisible(bool visible) {
+            leftBoundRenderer.enabled = visible;
+            rightBoundRenderer.enabled = visible;
+            prevLeftBoundRenderer.enabled = visible;
+            prevRightBoundRenderer.enabled = visible;
+            leftInnerBoundRenderer.enabled = visible;
+            rightInnerBoundRenderer.enabled = visible;
+            prevLeftInnerBoundRenderer.enabled = visible;
+            prevRightInnerBoundRenderer.enabled = visible;
+            highestMissChanceRenderer.enabled = visible;
         }
 
         private void updateIndicators() {

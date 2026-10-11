@@ -15,8 +15,8 @@
     <Product>AscendBeamRangeIndicators</Product>
     <Description>A Hollow Knight Mod</Description>
     <Copyright>Copyright ©  2023</Copyright>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -63,6 +63,9 @@
     </Reference>
     <Reference Include="MMHOOK_PlayMaker">
       <HintPath>$(HollowKnightRefs)/MMHOOK_PlayMaker.dll</HintPath>
+    </Reference>
+    <Reference Include="Satchel">
+      <HintPath>$(HollowKnightRefs)/Mods/Satchel/Satchel.dll</HintPath>
     </Reference>
     <Reference Include="ModCommon">
       <HintPath>$(HollowKnightRefs)/Mods/ModCommon/ModCommon.dll</HintPath>
